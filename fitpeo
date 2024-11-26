@@ -1,0 +1,84 @@
+//Automation Analyst Assignment(Fitpeo)
+
+
+package webdriverExamples;
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+public class FitPeoAutomation {
+		    public static void main(String[] args) {
+	        // Step 1: Set up WebDriver
+		    	System.setProperty("webdriver.EdgeDriver", "F:\\Java Developer- File\\New folder\\edgedriver_win64");
+		    	WebDriver driver = new EdgeDriver();
+
+	        try {
+	            // Step 2: Navigate to the FitPeo Homepage
+	            driver.manage().window().maximize();
+	            driver.get("https://fitpeo.com"); 
+	            System.out.println("Homepage Title: " + driver.getTitle());
+
+	            // Step 3: Navigate to the Revenue Calculator Page
+	            driver.findElement(By.linkText("Revenue Calculator")).click(); 
+	            new WebDriverWait(driver, Duration.ofSeconds(10))
+	                    .until(ExpectedConditions.titleContains("Revenue Calculator"));
+	            System.out.println("Revenue Calculator Page Title: " + driver.getTitle());
+
+	            // Step 4: Scroll Down to the Slider Section
+	            WebElement sliderSection = driver.findElement(By.cssSelector(".slider-section")); 
+	            Actions actions = new Actions(driver);
+	            actions.moveToElement(sliderSection).perform();
+	            System.out.println("Slider section is visible: " + sliderSection.isDisplayed());
+
+	            // Step 5: Adjust the Slider to 820
+	            WebElement slider = driver.findElement(By.cssSelector(".slider")); 
+	            actions.clickAndHold(slider).moveByOffset(50, 0).release().perform(); 
+	            new WebDriverWait(driver, Duration.ofSeconds(5))
+	                    .until(ExpectedConditions.attributeToBe(slider, "value", "820"));
+	            System.out.println("Slider value updated to 820");
+
+	            // Step 6: Update the Text Field with 560
+	            WebElement textField = driver.findElement(By.cssSelector(".slider-text-field")); 
+	            textField.clear();
+	            textField.sendKeys("560");
+	            actions.sendKeys(textField, "560").perform(); 
+
+	            // Validate the slider value is updated to 560
+	            String sliderValue = slider.getAttribute("value");
+	            if ("560".equals(sliderValue)) {
+	                System.out.println("Slider value successfully updated to 560");
+	            } else {
+	                System.out.println("Slider value mismatch. Current value: " + sliderValue);
+	            }
+
+	            // Step 7: Select CPT Code Checkboxes
+	            String[] cptCodes = {"99091", "99453", "99454", "99474"};
+	            for (String code : cptCodes) {
+	                WebElement checkbox = driver.findElement(By.cssSelector("input[type='checkbox'][value='CPT-" + code + "']")); 
+	                if (!checkbox.isSelected()) {
+	                    checkbox.click();
+	                }
+	                System.out.println("CPT Code " + code + " is selected: " + checkbox.isSelected());
+	            }
+
+	            // Step 8: Validate Total Recurring Reimbursement
+	            WebElement reimbursementHeader = driver.findElement(By.cssSelector(".reimbursement-header")); 
+	            String totalReimbursement = reimbursementHeader.getText();
+	            if (totalReimbursement.contains("$110700")) {
+	                System.out.println("Total Recurring Reimbursement is correct: " + totalReimbursement);
+	            } else {
+	                System.out.println("Reimbursement value mismatch. Current value: " + totalReimbursement);
+	            }
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	            // Step 9: Close the Browser
+	            driver.quit();
+	        }
+	    }
+	}
